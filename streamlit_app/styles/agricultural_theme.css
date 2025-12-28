@@ -1,0 +1,466 @@
+/* Agricultural Theme CSS for From Field to You */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+/* Root Variables for Agricultural Theme */
+:root {
+    --primary-green: #2d5016;
+    --secondary-green: #4a7c59;
+    --accent-green: #7fb069;
+    --light-green: #a7c957;
+    --very-light-green: #f2f7f0;
+    --earth-brown: #8b4513;
+    --warm-yellow: #f9c74f;
+    --sunset-orange: #f8ad9d;
+    --sky-blue: #90e0ef;
+    --cream-white: #fefae0;
+    --soft-gray: #6c757d;
+    --dark-gray: #343a40;
+}
+
+/* Global Body Styling */
+.stApp {
+    background: linear-gradient(135deg, #f2f7f0 0%, #fefae0 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header and Title Styling */
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif !important;
+    color: var(--primary-green) !important;
+    font-weight: 600 !important;
+}
+
+/* Custom Header with Farm Background */
+.agricultural-header {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(45, 80, 22, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.agricultural-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+    pointer-events: none;
+}
+
+.agricultural-header h1 {
+    color: white !important;
+    text-align: center;
+    margin: 0;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.agricultural-header p {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    margin: 0.5rem 0 0 0;
+    font-size: 1.2rem;
+}
+
+/* Enhanced Sidebar Styling */
+.css-1d391kg {
+    background: linear-gradient(180deg, var(--very-light-green) 0%, var(--cream-white) 100%) !important;
+    border-right: 3px solid var(--accent-green);
+}
+
+/* Sidebar Title */
+.css-1d391kg h1 {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: white !important;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(45, 80, 22, 0.2);
+}
+
+/* Enhanced Button Styling */
+.stButton > button {
+    background: linear-gradient(135deg, var(--secondary-green), var(--accent-green)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 500 !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(75, 124, 89, 0.3) !important;
+    text-transform: none !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(75, 124, 89, 0.4) !important;
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green)) !important;
+}
+
+/* Primary Button Styling */
+.stButton > button[data-baseweb="button"][data-testid="baseButton-primary"] {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green)) !important;
+    color: white !important;
+}
+
+.stButton > button[data-baseweb="button"][data-testid="baseButton-primary"]:hover {
+    background: linear-gradient(135deg, var(--secondary-green), var(--accent-green)) !important;
+}
+
+/* Card Styling for Metrics and Content */
+.metric-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--accent-green);
+    margin: 1rem 0;
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Metric Styling */
+.stMetric {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--accent-green);
+    transition: all 0.3s ease;
+}
+
+.stMetric:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stMetric label {
+    color: var(--primary-green) !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+}
+
+.stMetric [data-testid="metric-value"] {
+    color: var(--secondary-green) !important;
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+}
+
+/* Product Card Styling */
+.product-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    margin: 1rem 0;
+}
+
+.product-card:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-placeholder {
+    background: linear-gradient(135deg, var(--very-light-green) 0%, var(--cream-white) 100%);
+    border: 2px dashed var(--accent-green);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.product-image-placeholder:hover {
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green));
+    color: white;
+    border-color: var(--primary-green);
+}
+
+/* Enhanced Form Styling */
+.stTextInput > div > div > input {
+    border-radius: 10px !important;
+    border: 2px solid var(--light-green) !important;
+    padding: 0.75rem !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: all 0.3s ease !important;
+}
+
+.stTextInput > div > div > input:focus {
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1) !important;
+}
+
+.stSelectbox > div > div {
+    border-radius: 10px !important;
+    border: 2px solid var(--light-green) !important;
+}
+
+/* Alert and Info Box Styling */
+.stAlert {
+    border-radius: 12px !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.stSuccess {
+    background: linear-gradient(135deg, var(--light-green), var(--accent-green)) !important;
+    color: white !important;
+}
+
+.stInfo {
+    background: linear-gradient(135deg, var(--sky-blue), #87ceeb) !important;
+    color: var(--primary-green) !important;
+}
+
+.stWarning {
+    background: linear-gradient(135deg, var(--warm-yellow), #ffd60a) !important;
+    color: var(--primary-green) !important;
+}
+
+.stError {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+    color: white !important;
+}
+
+/* Enhanced Expander Styling */
+.stExpander {
+    border: 2px solid var(--light-green) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.stExpander > details > summary {
+    background: linear-gradient(135deg, var(--very-light-green), white) !important;
+    color: var(--primary-green) !important;
+    font-weight: 600 !important;
+    padding: 1rem !important;
+    border-radius: 10px !important;
+}
+
+/* Tab Styling */
+.stTabs {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+}
+
+.stTabs [data-baseweb="tab-list"] {
+    gap: 0.5rem;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: var(--very-light-green);
+    color: var(--primary-green);
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: white;
+    border-color: var(--accent-green);
+}
+
+/* Divider Styling */
+.element-container hr {
+    border: none;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+    margin: 2rem 0;
+}
+
+/* Container Styling */
+.main .block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* Custom Farm Hero Section */
+.farm-hero {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 50%, var(--accent-green) 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(45, 80, 22, 0.3);
+}
+
+.farm-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 30%);
+    pointer-events: none;
+}
+
+/* Testimonial Card Styling */
+.testimonial-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid var(--accent-green);
+    margin: 1rem 0;
+    transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Quick Action Grid */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.quick-action-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quick-action-card h4 {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.quick-action-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.quick-action-card:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .agricultural-header h1 {
+        font-size: 2rem;
+    }
+
+    .agricultural-header p {
+        font-size: 1rem;
+    }
+
+    .farm-hero {
+        padding: 2rem 1rem;
+    }
+
+    .metric-card, .product-card, .testimonial-card {
+        margin: 0.5rem 0;
+    }
+}
+
+/* Loading Animation */
+.loading-spinner {
+    border: 4px solid var(--very-light-green);
+    border-top: 4px solid var(--accent-green);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Footer Styling */
+.footer {
+    background: var(--primary-green);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px 15px 0 0;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+/* Custom Status Badges */
+.status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.status-pending {
+    background: var(--warm-yellow);
+    color: var(--primary-green);
+}
+
+.status-paid {
+    background: var(--accent-green);
+    color: white;
+}
+
+.status-fulfilled {
+    background: var(--secondary-green);
+    color: white;
+}
+
+.status-draft {
+    background: var(--soft-gray);
+    color: white;
+}
