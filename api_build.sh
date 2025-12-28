@@ -2,7 +2,7 @@ REGION="us-east-1"
 PLATFORM="linux/amd64"
 
 
-API_REPO="$(terraform output -raw ecr_api_repository_url)"
+API_REPO="397077210492.dkr.ecr.us-east-1.amazonaws.com/from-field-dev-api"
 
 
 echo "Logging into ECR in region ${REGION}..."
