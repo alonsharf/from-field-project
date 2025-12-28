@@ -3,7 +3,7 @@ PLATFORM="linux/amd64"
 
 
 API_REPO="$(terraform output -raw ecr_api_repository_url)"
-FRONTEND_REPO="$(terraform output -raw ecr_frontend_repository_url)"
+
 
 echo "Logging into ECR in region ${REGION}..."
 aws ecr get-login-password --region "${REGION}" \
