@@ -142,14 +142,14 @@ def show_product_catalog():
                     elif stock_quantity <= 10:
                         stock_status = "⚠️ Low Stock"
 
-                    with st.expander(f"🥕 {product['name']} - ${price_per_unit:.2f}/{unit_label} - {stock_status}"):
+                    with st.expander(f"🥕 {product['name']} - ₪{price_per_unit:.2f}/{unit_label} - {stock_status}"):
                         col1, col2, col3, col4 = st.columns(4)
 
                         with col1:
                             st.metric("Current Stock", f"{stock_quantity:.1f} {unit_label}")
 
                         with col2:
-                            st.metric("Price", f"${price_per_unit:.2f}/{unit_label}")
+                            st.metric("Price", f"₪{price_per_unit:.2f}/{unit_label}")
 
                         with col3:
                             st.metric("Category", product['category'])

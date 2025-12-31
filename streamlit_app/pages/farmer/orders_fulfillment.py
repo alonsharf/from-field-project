@@ -138,7 +138,7 @@ def show_pending_orders():
                     is_rush = False
                 priority = "Rush" if is_rush else "Regular"
 
-                with st.expander(f"📋 {order_number} - {customer_name} - ${total_amount:.2f}", expanded=True):
+                with st.expander(f"📋 {order_number} - {customer_name} - ₪{total_amount:.2f}", expanded=True):
                     col1, col2 = st.columns([2, 1])
 
                     with col1:
@@ -243,7 +243,7 @@ def show_order_history():
                         st.markdown(customer_name)
 
                     with col3:
-                        st.markdown(f"${total_amount:.2f}")
+                        st.markdown(f"₪{total_amount:.2f}")
 
                     with col4:
                         try:
@@ -402,7 +402,7 @@ def show_order_analytics():
         with col2:
             st.metric(
                 "Average Order Value",
-                f"${analytics['avg_order_value']:.2f}",
+                f"₪{analytics['avg_order_value']:.2f}",
                 help="Average value per order"
             )
 
@@ -446,7 +446,7 @@ def show_order_details(order, order_number, customer_name, total_amount):
         st.markdown("**Order Information:**")
         st.markdown(f"• Status: {order['status']}")
         st.markdown(f"• Payment: {order['payment_status']}")
-        st.markdown(f"• Total: ${total_amount:.2f}")
+        st.markdown(f"• Total: ₪{total_amount:.2f}")
 
     st.markdown("**Delivery Address:**")
     st.markdown(f"{order.get('shipping_address1', 'N/A')}")
@@ -458,7 +458,7 @@ def show_order_details(order, order_number, customer_name, total_amount):
             product_name = item.get('product_name', 'Unknown Product')
             quantity = float(item.get('quantity', 0))
             unit_price = float(item.get('unit_price', 0))
-            st.markdown(f"• {product_name} - {quantity:.1f} @ ${unit_price:.2f}")
+            st.markdown(f"• {product_name} - {quantity:.1f} @ ₪{unit_price:.2f}")
     else:
         st.markdown("**Order Items:** Items not loaded")
 

@@ -235,7 +235,7 @@ def show_current_orders():
                         # Order items (would need separate API call to get items)
                         st.markdown("**Items:** Items not loaded")
 
-                        st.markdown(f"**Total: ${total_amount:.2f}**")
+                        st.markdown(f"**Total: ₪{total_amount:.2f}**")
 
                     with col2:
                         st.markdown("**Actions:**")
@@ -317,7 +317,7 @@ def show_order_history():
                     st.markdown(f"{order['items_count']} items")
 
                 with col5:
-                    st.markdown(f"**${order['total']:.2f}**")
+                    st.markdown(f"**₪{order['total']:.2f}**")
 
                 with col6:
                     # Order actions
@@ -342,11 +342,11 @@ def show_order_history():
 
         with col2:
             total_spent = sum(order['total'] for order in order_history)
-            st.metric("Total Spent", f"${total_spent:.2f}")
+            st.metric("Total Spent", f"₪{total_spent:.2f}")
 
         with col3:
             avg_order = total_spent / len(order_history) if order_history else 0
-            st.metric("Average Order", f"${avg_order:.2f}")
+            st.metric("Average Order", f"₪{avg_order:.2f}")
 
         with col4:
             avg_rating = sum(order.get('rating', 0) for order in order_history) / len(order_history) if order_history else 0
@@ -456,7 +456,7 @@ def show_reorder_favorites():
                 with cols[i]:
                     display_product_image(product, use_column_width=True)
                     st.markdown(f"**{product['name']}**")
-                    st.markdown(f"${product['price']:.2f} per {product['unit']}")
+                    st.markdown(f"₪{product['price']:.2f} per {product['unit']}")
                     st.caption(f"From {product['farmer_name']}")
 
                     quantity = st.number_input(
@@ -483,7 +483,7 @@ def show_reorder_favorites():
 
                 with col1:
                     st.markdown(f"**{order['order_number']}** - {order['order_date']}")
-                    st.caption(f"{order['items_count']} items - ${order['total']:.2f}")
+                    st.caption(f"{order['items_count']} items - ₪{order['total']:.2f}")
 
                 with col2:
                     if st.button("👁️ View", key=f"quick_view_{order['order_number']}", use_container_width=True):
@@ -603,7 +603,7 @@ def show_order_details(order, order_number, customer_name, total_amount):
     """Show detailed order information."""
     st.info(f"📋 Order Details: {order_number}")
     st.markdown(f"**Customer:** {customer_name}")
-    st.markdown(f"**Total:** ${total_amount:.2f}")
+    st.markdown(f"**Total:** ₪{total_amount:.2f}")
     st.markdown(f"**Status:** {order['status']}")
     st.markdown(f"**Created:** {order['created_at'][:19].replace('T', ' ')}")
 

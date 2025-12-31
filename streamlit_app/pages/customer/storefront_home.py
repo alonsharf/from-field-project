@@ -146,7 +146,7 @@ def show_storefront_home():
                 with cols[i]:
                     display_product_image(product, use_column_width=True)
                     st.markdown(f"**{product['name']}**")
-                    st.markdown(f"**${product['price']:.2f}** {product['unit']}")
+                    st.markdown(f"**₪{product['price']:.2f}** {product['unit']}")
                     st.markdown(f"_{product['description']}_")
 
                     if product["in_stock"]:
@@ -197,7 +197,7 @@ def show_storefront_home():
         • Order by Sunday for Tuesday delivery
         • Order by Wednesday for Friday delivery
 
-        **Delivery Fee:** $5.99 (Free on orders over $50)
+        **Delivery Fee:** ₪5.99 (Free on orders over ₪50)
         """)
 
         if st.button("📍 Check Delivery to My Area"):
@@ -319,7 +319,7 @@ def show_delivery_checker():
                 # Mock delivery check
                 if zip_code.startswith(('621', '622', '623', '606', '607')):
                     st.success(f"✅ Great news! We deliver to {zip_code}")
-                    st.info("Delivery fee: $5.99 (Free on orders over $50)")
+                    st.info("Delivery fee: ₪5.99 (Free on orders over ₪50)")
                 else:
                     st.warning(f"❌ Sorry, we don't currently deliver to {zip_code}")
                     st.info("We're always expanding! Check back soon or contact us for special arrangements.")

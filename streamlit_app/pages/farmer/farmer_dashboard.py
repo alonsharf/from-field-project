@@ -139,7 +139,7 @@ def show_farmer_dashboard():
 
                         with st.expander(f"Order {order_number} - {customer_name}", expanded=False):
                             st.markdown(f"**Status:** {order['status']}")
-                            st.markdown(f"**Total:** ${total_amount:.2f}")
+                            st.markdown(f"**Total:** ₪{total_amount:.2f}")
                             st.markdown(f"**Created:** {order['created_at'][:19].replace('T', ' ')}")
                             st.markdown(f"**Payment:** {order['payment_status']}")
 
@@ -147,7 +147,7 @@ def show_farmer_dashboard():
                             if order.get('items') and isinstance(order['items'], list):
                                 st.markdown(f"**Items:** {len(order['items'])}")
                                 for item in order['items']:
-                                    st.markdown(f"• {item.get('product_name', 'Unknown Product')} - {item.get('quantity', 0)} × ${float(item.get('unit_price', 0)):.2f}")
+                                    st.markdown(f"• {item.get('product_name', 'Unknown Product')} - {item.get('quantity', 0)} × ₪{float(item.get('unit_price', 0)):.2f}")
                             else:
                                 st.markdown("**Items:** Details not loaded")
                 else:
