@@ -280,9 +280,12 @@ def show_login_page():
                 st.markdown("Login as the farm administrator to manage inventory, orders, and customers.")
 
                 with st.form("admin_login"):
-                    email = st.text_input("Admin Email", placeholder="admin@farm.com")
-                    password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
-                    submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
+                    col1, col2, col3 = st.columns([1, 2, 1])
+
+                    with col2:
+                        email = st.text_input("Admin Email", placeholder="admin@farm.com")
+                        password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
+                        submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
 
                     if submitted:
                         if email and password:
