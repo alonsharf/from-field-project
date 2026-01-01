@@ -464,20 +464,14 @@ def show_order_analytics():
         # Monthly performance metrics
         st.markdown("**📊 Key Performance Metrics**")
         try:
-            # Convert analytics values to numbers (API might return strings)
-            chart_orders = int(analytics.get('orders_this_month', 0) or 0)
-            chart_avg_value = float(analytics.get('avg_order_value', 0) or 0)
-            chart_fulfillment = float(analytics.get('fulfillment_rate', 0) or 0)
-            chart_satisfaction = float(analytics.get('customer_satisfaction', 0) or 0)
-            
             # Create a simple metrics visualization
             metrics_data = {
                 'Metric': ['Orders', 'Avg Value (₪)', 'Fulfillment %', 'Satisfaction'],
                 'Value': [
-                    chart_orders,
-                    chart_avg_value,
-                    chart_fulfillment,
-                    chart_satisfaction * 20  # Scale to make visible
+                    analytics['orders_this_month'],
+                    analytics['avg_order_value'],
+                    analytics['fulfillment_rate'],
+                    analytics['customer_satisfaction'] * 20  # Scale to make visible
                 ]
             }
 
