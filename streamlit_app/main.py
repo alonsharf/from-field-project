@@ -86,7 +86,8 @@ def login_user(user_data):
 def logout_user():
     """Logout user and clear session state."""
     keys_to_clear = ['user_role', 'user_id', 'user_name', 'user_email',
-                     'farm_name', 'first_name', 'last_name', 'current_page', 'show_admin_access']
+                     'farm_name', 'first_name', 'last_name', 'current_page',
+                     'show_admin_access', 'active_tab']
     for key in keys_to_clear:
         if key in st.session_state:
             del st.session_state[key]
@@ -155,142 +156,148 @@ def show_login_page():
     # Initialize admin access visibility in session state
     if 'show_admin_access' not in st.session_state:
         st.session_state.show_admin_access = False
+    if 'active_tab' not in st.session_state:
+        st.session_state.active_tab = 0
 
     # Create tabs for Login and Registration
     tab_list = ["🛒 Customer Login", "📝 Register New Account"]
+    tab_content = ["customer_login", "customer_register"]
 
     # Add admin tab if it should be visible
     if st.session_state.show_admin_access:
         tab_list.append("🔐 Administrative Access")
+        tab_content.append("admin_login")
+
+    # Reorder tabs to show the active tab first if it's admin
+    if st.session_state.show_admin_access and st.session_state.active_tab == 2:
+        # Put admin tab first to auto-select it
+        tab_list = ["🔐 Administrative Access", "🛒 Customer Login", "📝 Register New Account"]
+        tab_content = ["admin_login", "customer_login", "customer_register"]
 
     tabs = st.tabs(tab_list)
 
-    # Customer Login Tab
-    with tabs[0]:
-        st.header("Customer Login")
-        st.markdown("Login to browse products, place orders, and track shipments.")
+    # Render tab content based on the current tab order
+    for i, content_type in enumerate(tab_content):
+        with tabs[i]:
+            if content_type == "customer_login":
+                st.header("Customer Login")
+                st.markdown("Login to browse products, place orders, and track shipments.")
 
-        with st.form("customer_login"):
-            col1, col2 = st.columns([2, 1])
+                with st.form("customer_login"):
+                    col1, col2, col3 = st.columns([1, 2, 1])
 
-            with col1:
-                email = st.text_input("Email", placeholder="customer@example.com", key="customer_email")
-                password = st.text_input("Password", type="password", placeholder="Enter your password", key="customer_password")
+                    with col2:
+                        email = st.text_input("Email", placeholder="customer@example.com", key="customer_email")
+                        password = st.text_input("Password", type="password", placeholder="Enter your password", key="customer_password")
+                        submitted = st.form_submit_button("Login", type="primary", use_container_width=True)
 
-            with col2:
-                st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
-                submitted = st.form_submit_button("Login", type="primary", use_container_width=True)
-
-            if submitted:
-                if email and password:
-                    user_data = authenticate_customer(email, password)
-                    if user_data:
-                        login_user(user_data)
-                        st.session_state.current_page = "Storefront Home"
-                        st.success(f"Welcome back, {user_data['name']}!")
-                        st.rerun()
-                    else:
-                        st.error("Invalid email or password")
-                else:
-                    st.error("Please enter both email and password")
-
-        st.info("💡 Existing customers can use: alice@example.com / password123")
-
-    # Registration Tab
-    with tabs[1]:
-        st.header("Register New Customer Account")
-        st.markdown("Create a new account to start shopping from our farm.")
-
-        with st.form("customer_register"):
-            col1, col2 = st.columns(2)
-            with col1:
-                first_name = st.text_input("First Name", placeholder="John")
-            with col2:
-                last_name = st.text_input("Last Name", placeholder="Doe")
-
-            email = st.text_input("Email", placeholder="john.doe@example.com", key="register_email")
-            phone = st.text_input("Phone (Optional)", placeholder="+972-50-123-4567")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                password = st.text_input("Password", type="password", placeholder="Choose a strong password", key="register_password")
-            with col2:
-                confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm password")
-
-            # Address fields
-            st.subheader("Delivery Address")
-            address_line1 = st.text_input("Address Line 1", placeholder="123 Main Street")
-            address_line2 = st.text_input("Address Line 2 (Optional)", placeholder="Apt 4B")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                city = st.text_input("City", placeholder="Tel Aviv")
-            with col2:
-                postal_code = st.text_input("Postal Code", placeholder="12345")
-
-            submitted = st.form_submit_button("Create Account", type="primary", use_container_width=True)
-
-            if submitted:
-                # Validation
-                if not all([first_name, last_name, email, password, confirm_password]):
-                    st.error("Please fill in all required fields")
-                elif password != confirm_password:
-                    st.error("Passwords do not match")
-                elif len(password) < 6:
-                    st.error("Password must be at least 6 characters long")
-                else:
-                    # Prepare address data
-                    address_data = None
-                    if address_line1 or city:
-                        address_data = {
-                            'line1': address_line1,
-                            'line2': address_line2,
-                            'city': city,
-                            'postal_code': postal_code,
-                            'country': 'Israel'
-                        }
-
-                    # Register customer
-                    customer_id = register_customer(
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=email,
-                        password=password,
-                        phone=phone,
-                        address_data=address_data
-                    )
-
-                    if customer_id:
-                        st.success("Account created successfully! Please login with your new credentials.")
-                        st.balloons()
-                    else:
-                        st.error("Registration failed. Email may already exist.")
-
-    # Administrative Access Tab (only visible if enabled)
-    if st.session_state.show_admin_access:
-        with tabs[2]:
-            st.header("Farm Admin Login")
-            st.markdown("Login as the farm administrator to manage inventory, orders, and customers.")
-
-            with st.form("admin_login"):
-                email = st.text_input("Admin Email", placeholder="admin@farm.com")
-                password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
-                submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
-
-                if submitted:
-                    if email and password:
-                        user_data = authenticate_farmer(email, password)
-                        if user_data:
-                            login_user(user_data)
-                            st.session_state.current_page = "Farmer Dashboard"
-                            st.success(f"Welcome back, {user_data['name']}!")
-                            st.rerun()
+                    if submitted:
+                        if email and password:
+                            user_data = authenticate_customer(email, password)
+                            if user_data:
+                                login_user(user_data)
+                                st.session_state.current_page = "Storefront Home"
+                                st.success(f"Welcome back, {user_data['name']}!")
+                                st.rerun()
+                            else:
+                                st.error("Invalid email or password")
                         else:
-                            st.error("Invalid email or password")
-                    else:
-                        st.error("Please enter both email and password")
+                            st.error("Please enter both email and password")
 
-            st.info("💡 Default: john@greenvalley.com / admin123")
+                st.info("💡 Existing customers can use: alice@example.com / password123")
+
+            elif content_type == "customer_register":
+                st.header("Register New Customer Account")
+                st.markdown("Create a new account to start shopping from our farm.")
+
+                with st.form("customer_register"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        first_name = st.text_input("First Name", placeholder="John")
+                    with col2:
+                        last_name = st.text_input("Last Name", placeholder="Doe")
+
+                    email = st.text_input("Email", placeholder="john.doe@example.com", key="register_email")
+                    phone = st.text_input("Phone (Optional)", placeholder="+972-50-123-4567")
+
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        password = st.text_input("Password", type="password", placeholder="Choose a strong password", key="register_password")
+                    with col2:
+                        confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm password")
+
+                    # Address fields
+                    st.subheader("Delivery Address")
+                    address_line1 = st.text_input("Address Line 1", placeholder="123 Main Street")
+                    address_line2 = st.text_input("Address Line 2 (Optional)", placeholder="Apt 4B")
+
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        city = st.text_input("City", placeholder="Tel Aviv")
+                    with col2:
+                        postal_code = st.text_input("Postal Code", placeholder="12345")
+
+                    submitted = st.form_submit_button("Create Account", type="primary", use_container_width=True)
+
+                    if submitted:
+                        # Validation
+                        if not all([first_name, last_name, email, password, confirm_password]):
+                            st.error("Please fill in all required fields")
+                        elif password != confirm_password:
+                            st.error("Passwords do not match")
+                        elif len(password) < 6:
+                            st.error("Password must be at least 6 characters long")
+                        else:
+                            # Prepare address data
+                            address_data = None
+                            if address_line1 or city:
+                                address_data = {
+                                    'line1': address_line1,
+                                    'line2': address_line2,
+                                    'city': city,
+                                    'postal_code': postal_code,
+                                    'country': 'Israel'
+                                }
+
+                            # Register customer
+                            customer_id = register_customer(
+                                first_name=first_name,
+                                last_name=last_name,
+                                email=email,
+                                password=password,
+                                phone=phone,
+                                address_data=address_data
+                            )
+
+                            if customer_id:
+                                st.success("Account created successfully! Please login with your new credentials.")
+                                st.balloons()
+                            else:
+                                st.error("Registration failed. Email may already exist.")
+
+            elif content_type == "admin_login":
+                st.header("Farm Admin Login")
+                st.markdown("Login as the farm administrator to manage inventory, orders, and customers.")
+
+                with st.form("admin_login"):
+                    email = st.text_input("Admin Email", placeholder="admin@farm.com")
+                    password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
+                    submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
+
+                    if submitted:
+                        if email and password:
+                            user_data = authenticate_farmer(email, password)
+                            if user_data:
+                                login_user(user_data)
+                                st.session_state.current_page = "Farmer Dashboard"
+                                st.success(f"Welcome back, {user_data['name']}!")
+                                st.rerun()
+                            else:
+                                st.error("Invalid email or password")
+                        else:
+                            st.error("Please enter both email and password")
+
+                st.info("💡 Default: john@greenvalley.com / admin123")
 
     # Button to toggle admin access visibility
     st.markdown("---")
@@ -299,10 +306,12 @@ def show_login_page():
         if not st.session_state.show_admin_access:
             if st.button("🔐 Administrative Access", use_container_width=True, type="secondary"):
                 st.session_state.show_admin_access = True
+                st.session_state.active_tab = 2  # Set active tab to admin
                 st.rerun()
         else:
             if st.button("🔒 Hide Admin Access", use_container_width=True, type="secondary"):
                 st.session_state.show_admin_access = False
+                st.session_state.active_tab = 0  # Reset to customer login tab
                 st.rerun()
 
 def show_farmer_portal():
