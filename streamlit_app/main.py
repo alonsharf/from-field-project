@@ -181,7 +181,6 @@ def show_login_page():
         with tabs[i]:
             if content_type == "customer_login":
                 st.header("Customer Login")
-                st.markdown("Login to browse products, place orders, and track shipments.")
 
                 with st.form("customer_login"):
                     col1, col2, col3 = st.columns([1, 2, 1])
@@ -277,7 +276,6 @@ def show_login_page():
 
             elif content_type == "admin_login":
                 st.header("Farm Admin Login")
-                st.markdown("Login as the farm administrator to manage inventory, orders, and customers.")
 
                 with st.form("admin_login"):
                     col1, col2, col3 = st.columns([1, 2, 1])
