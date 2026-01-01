@@ -185,7 +185,7 @@ def show_login_page():
 
     # Reorder tabs to show the active tab first if it's admin
     if st.session_state.show_admin_access and st.session_state.active_tab == 2:
-        # Put admin tab first to auto-select it, but keep customer/register in original order
+        # Put admin tab first to auto-select it
         tab_list = ["🔐 Administrative Access", "🛒 Customer Login", "📝 Register New Account"]
         tab_content = ["admin_login", "customer_login", "customer_register"]
 
@@ -196,6 +196,7 @@ def show_login_page():
         with tabs[i]:
             if content_type == "customer_login":
                 st.header("Customer Login")
+                st.markdown("Login to browse products, place orders, and track shipments.")
 
                 with st.form("customer_login"):
                     col1, col2, col3 = st.columns([1, 2, 1])
@@ -217,6 +218,8 @@ def show_login_page():
                                 st.error("Invalid email or password")
                         else:
                             st.error("Please enter both email and password")
+
+                st.info("💡 Existing customers can use: alice@example.com / password123")
 
             elif content_type == "customer_register":
                 st.header("Register New Customer Account")
@@ -289,14 +292,12 @@ def show_login_page():
 
             elif content_type == "admin_login":
                 st.header("Farm Admin Login")
+                st.markdown("Login as the farm administrator to manage inventory, orders, and customers.")
 
                 with st.form("admin_login"):
-                    col1, col2, col3 = st.columns([1, 2, 1])
-
-                    with col2:
-                        email = st.text_input("Admin Email", placeholder="admin@farm.com")
-                        password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
-                        submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
+                    email = st.text_input("Admin Email", placeholder="admin@farm.com")
+                    password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
+                    submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
 
                     if submitted:
                         if email and password:
@@ -310,6 +311,8 @@ def show_login_page():
                                 st.error("Invalid email or password")
                         else:
                             st.error("Please enter both email and password")
+
+                st.info("💡 Default: john@greenvalley.com / admin123")
 
     # Button to toggle admin access visibility
     st.markdown("---")
