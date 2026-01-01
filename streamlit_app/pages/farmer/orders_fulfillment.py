@@ -383,7 +383,7 @@ def show_order_analytics():
         farmer_id = current_user.get('id') if current_user else None
 
         # Get analytics data
-        analytics = get_order_analytics(farmer_id) if farmer_id else {
+        analytics = get_order_analytics() if farmer_id else {
             'orders_this_month': 0,
             'avg_order_value': 0,
             'fulfillment_rate': 0,
@@ -426,9 +426,98 @@ def show_order_analytics():
 
     st.divider()
 
-    # Charts section (would be populated from analytics API)
+    # Charts section with basic visualizations
     st.subheader("📊 Analytics Dashboard")
-    st.info("📈 Detailed analytics charts and insights will be populated from the analytics API when available.")
+
+    # Create basic charts using available data
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Order fulfillment status chart
+        st.markdown("**📈 Order Status Overview**")
+        try:
+            # Get order counts by status
+            paid_orders = get_farmer_orders('PAID') or []
+            pending_orders = get_farmer_orders('PENDING_PAYMENT') or []
+            fulfilled_orders = get_farmer_orders('FULFILLED') or []
+
+            status_data = {
+                'Status': ['Pending Payment', 'Paid', 'Fulfilled'],
+                'Count': [len(pending_orders), len(paid_orders), len(fulfilled_orders)]
+            }
+
+            if any(status_data['Count']):  # Only show if there's data
+                st.bar_chart(status_data, x='Status', y='Count')
+            else:
+                st.info("No order data available for chart")
+
+        except Exception as e:
+            st.error(f"Unable to load order status chart: {str(e)}")
+
+    with col2:
+        # Monthly performance metrics
+        st.markdown("**📊 Key Performance Metrics**")
+        try:
+            # Create a simple metrics visualization
+            metrics_data = {
+                'Metric': ['Orders', 'Avg Value (₪)', 'Fulfillment %', 'Satisfaction'],
+                'Value': [
+                    analytics['orders_this_month'],
+                    analytics['avg_order_value'],
+                    analytics['fulfillment_rate'],
+                    analytics['customer_satisfaction'] * 20  # Scale to make visible
+                ]
+            }
+
+            if any(metrics_data['Value']):  # Only show if there's data
+                st.bar_chart(metrics_data, x='Metric', y='Value')
+            else:
+                st.info("No analytics data available for chart")
+
+        except Exception as e:
+            st.error(f"Unable to load metrics chart: {str(e)}")
+
+    # Order value trends (simulated data based on current orders)
+    st.markdown("**💰 Recent Order Values**")
+    try:
+        # Get recent orders for trend analysis
+        recent_orders = []
+        for status in ['PAID', 'FULFILLED', 'PENDING_PAYMENT']:
+            orders = get_farmer_orders(status) or []
+            recent_orders.extend(orders)
+
+        if recent_orders:
+            # Sort by date and take last 10 orders
+            recent_orders.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+            recent_orders = recent_orders[:10]
+
+            # Create trend data
+            order_values = []
+            order_dates = []
+
+            for i, order in enumerate(reversed(recent_orders)):  # Show oldest to newest
+                try:
+                    total_amount = float(order.get('total_amount', 0))
+                    order_values.append(total_amount)
+                    # Use order index as x-axis since dates might be complex to parse
+                    order_dates.append(f"Order {i+1}")
+                except:
+                    continue
+
+            if order_values:
+                trend_data = {
+                    'Order': order_dates,
+                    'Value (₪)': order_values
+                }
+                st.line_chart(trend_data, x='Order', y='Value (₪)')
+            else:
+                st.info("No recent order data available for trend chart")
+        else:
+            st.info("No recent orders available for trend analysis")
+
+    except Exception as e:
+        st.error(f"Unable to load order trends: {str(e)}")
+        st.info("Order trend chart will be available when order data is loaded")
 
 def show_order_details(order, order_number, customer_name, total_amount):
     """Show detailed order information."""

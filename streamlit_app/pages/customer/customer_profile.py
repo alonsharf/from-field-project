@@ -583,19 +583,19 @@ def show_account_settings():
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("📧 Request Account Data"):
+        if st.button("📧 Request Account Data", use_container_width=True):
             st.info("We'll email you a copy of all your account data within 24 hours")
 
-        if st.button("⏸️ Temporarily Deactivate Account"):
+        if st.button("⏸️ Temporarily Deactivate Account", use_container_width=True):
             st.warning("Your account will be paused. You can reactivate it anytime by logging in")
 
     with col2:
-        if st.button("🔄 Reset All Preferences"):
+        if st.button("🔄 Reset All Preferences", use_container_width=True):
             st.info("All preferences have been reset to default values")
 
         # Danger zone
         st.markdown("**⚠️ Danger Zone**")
-        if st.button("❌ Delete Account", type="secondary"):
+        if st.button("❌ Delete Account", type="secondary", use_container_width=True):
             show_delete_account_confirmation()
 
     # Recent activity

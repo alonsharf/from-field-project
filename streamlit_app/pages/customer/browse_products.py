@@ -442,7 +442,7 @@ def add_to_cart(product, quantity):
 
 def show_product_details(product):
     """Show detailed product information."""
-    with st.expander(f"📋 {product['name']} - Details", expanded=True):
+    with st.expander(f"📋 {product['name']} - Details", expanded=False):
         col1, col2 = st.columns([1, 2])
 
         with col1:
