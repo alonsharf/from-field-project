@@ -141,7 +141,9 @@ class ProductService:
         db.add(db_product)
         await db.commit()
         await db.refresh(db_product)
-        return db_product
+        
+        # Re-fetch with eager loading to avoid lazy load issues in async context
+        return await ProductService.get_product(db, db_product.id)
 
     @staticmethod
     async def update_product(
@@ -192,9 +194,9 @@ class ProductService:
             )
             await db.execute(stmt)
             await db.commit()
-            await db.refresh(product)
 
-        return product
+        # Re-fetch with eager loading to avoid lazy load issues in async context
+        return await ProductService.get_product(db, product_id)
 
     @staticmethod
     async def delete_product(db: AsyncSession, product_id: UUID) -> bool:
