@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, and_
 from sqlalchemy.orm import selectinload
 
-from packages.db.models import Product as ProductModel, Category
+from packages.db.models import Product as ProductModel, Category, UnitLabel
 from .models import ProductCreate, ProductUpdate
 
 
@@ -110,7 +110,34 @@ class ProductService:
     @staticmethod
     async def create_product(db: AsyncSession, product_data: ProductCreate) -> ProductModel:
         """Create a new product."""
-        db_product = ProductModel(**product_data.model_dump())
+        # Convert Pydantic model to dict
+        product_dict = product_data.model_dump()
+        
+        # Look up category by name and get its ID
+        category_name = product_dict.pop("category", None)
+        if category_name:
+            category_result = await db.execute(
+                select(Category).where(Category.name == category_name)
+            )
+            category = category_result.scalar_one_or_none()
+            if category:
+                product_dict["category_id"] = category.id
+            else:
+                raise ValueError(f"Category '{category_name}' not found")
+        
+        # Look up unit_label by name and get its ID
+        unit_label_name = product_dict.pop("unit_label", None)
+        if unit_label_name:
+            unit_label_result = await db.execute(
+                select(UnitLabel).where(UnitLabel.name == unit_label_name)
+            )
+            unit_label = unit_label_result.scalar_one_or_none()
+            if unit_label:
+                product_dict["unit_label_id"] = unit_label.id
+            else:
+                raise ValueError(f"Unit label '{unit_label_name}' not found")
+        
+        db_product = ProductModel(**product_dict)
         db.add(db_product)
         await db.commit()
         await db.refresh(db_product)
@@ -130,6 +157,33 @@ class ProductService:
 
         # Update only provided fields
         update_data = product_update.dict(exclude_unset=True)
+        
+        # Convert category name to category_id if provided
+        if "category" in update_data:
+            category_name = update_data.pop("category")
+            if category_name:
+                category_result = await db.execute(
+                    select(Category).where(Category.name == category_name)
+                )
+                category = category_result.scalar_one_or_none()
+                if category:
+                    update_data["category_id"] = category.id
+                else:
+                    raise ValueError(f"Category '{category_name}' not found")
+        
+        # Convert unit_label name to unit_label_id if provided
+        if "unit_label" in update_data:
+            unit_label_name = update_data.pop("unit_label")
+            if unit_label_name:
+                unit_label_result = await db.execute(
+                    select(UnitLabel).where(UnitLabel.name == unit_label_name)
+                )
+                unit_label = unit_label_result.scalar_one_or_none()
+                if unit_label:
+                    update_data["unit_label_id"] = unit_label.id
+                else:
+                    raise ValueError(f"Unit label '{unit_label_name}' not found")
+        
         if update_data:
             stmt = (
                 update(ProductModel)
