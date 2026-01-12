@@ -109,10 +109,10 @@ def show_active_shipments():
             st.info("📭 No active shipments at the moment.")
         else:
             for shipment in active_shipments:
-                tracking_display = shipment.get('tracking_number', 'No tracking')
+                tracking_display = shipment.get('tracking_number') or 'No tracking'
 
-                # For customer display, use shipping_name if available
-                customer_display = shipment.get('shipping_name', 'Unknown Customer')
+                # For customer display, use shipping_name if available (handle None explicitly)
+                customer_display = shipment.get('shipping_name') or 'Unknown Customer'
 
                 # Generate order number from order_id and creation date if available
                 order_display = shipment.get('order_id', 'N/A')
@@ -553,8 +553,25 @@ def show_logistics_settings():
 def show_tracking_details(tracking_number):
     """Show detailed tracking information."""
     st.info(f"📍 Tracking details for {tracking_number}")
-    # This would typically fetch real tracking data from carrier APIs
-    st.write("Detailed tracking information would be displayed here")
+    
+    # Show tracking timeline
+    st.markdown("**📦 Shipment Timeline:**")
+    
+    # In a real implementation, this would fetch from carrier APIs
+    # For now, show the tracking number that can be used on carrier websites
+    if tracking_number.startswith("FARM-"):
+        st.markdown("🏠 **Farm Direct Delivery** - Track with your local delivery service")
+        st.markdown(f"• Tracking Number: `{tracking_number}`")
+        st.markdown("• Contact the farm directly for delivery updates")
+    elif tracking_number.startswith("1ZUPS"):
+        st.markdown("🟤 **UPS Tracking**")
+        st.markdown(f"• [Track on UPS.com](https://www.ups.com/track?tracknum={tracking_number})")
+    elif tracking_number.startswith("1ZFED"):
+        st.markdown("🟣 **FedEx Tracking**")
+        st.markdown(f"• [Track on FedEx.com](https://www.fedex.com/fedextrack/?trknbr={tracking_number})")
+    else:
+        st.markdown(f"• Tracking Number: `{tracking_number}`")
+        st.markdown("• Check with the carrier for delivery status")
 
 def show_status_update_form(shipment_id, tracking_number):
     """Show form to update shipment status."""

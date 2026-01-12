@@ -113,12 +113,21 @@ def show_customer_directory():
 
                         with col2:
                             st.markdown("**Actions:**")
-
-                            if st.button(f"📋 View Orders", key=f"orders_{customer['id']}", use_container_width=True):
-                                show_customer_orders(customer['id'], customer_name)
-
-                            if st.button(f"📧 Contact Info", key=f"contact_{customer['id']}", use_container_width=True):
-                                st.info(f"Contact details for {customer_name} displayed above")
+                            
+                            is_viewing_orders = st.session_state.get('viewing_orders') == customer['id']
+                            orders_label = "📋 Hide Orders" if is_viewing_orders else "📋 View Orders"
+                            
+                            if st.button(orders_label, key=f"orders_{customer['id']}", use_container_width=True):
+                                # Toggle orders view
+                                if is_viewing_orders:
+                                    st.session_state.viewing_orders = None
+                                else:
+                                    st.session_state.viewing_orders = customer['id']
+                                st.rerun()
+                        
+                        # Show orders below if this customer is selected
+                        if st.session_state.get('viewing_orders') == customer['id']:
+                            show_customer_orders(customer['id'], customer_name)
 
     except Exception as e:
         st.error("Unable to load customer data from API.")

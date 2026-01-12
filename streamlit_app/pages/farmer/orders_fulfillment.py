@@ -390,33 +390,39 @@ def show_order_analytics():
             'customer_satisfaction': 4.8
         }
 
+        # Convert to numbers (API might return strings)
+        orders_this_month = int(analytics.get('orders_this_month', 0) or 0)
+        avg_order_value = float(analytics.get('avg_order_value', 0) or 0)
+        fulfillment_rate = float(analytics.get('fulfillment_rate', 0) or 0)
+        customer_satisfaction = float(analytics.get('customer_satisfaction', 4.8) or 4.8)
+
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
             st.metric(
                 "Orders This Month",
-                str(analytics['orders_this_month']),
+                str(orders_this_month),
                 help="Total orders received this month"
             )
 
         with col2:
             st.metric(
                 "Average Order Value",
-                f"₪{analytics['avg_order_value']:.2f}",
+                f"₪{avg_order_value:.2f}",
                 help="Average value per order"
             )
 
         with col3:
             st.metric(
                 "Fulfillment Rate",
-                f"{analytics['fulfillment_rate']:.1f}%",
+                f"{fulfillment_rate:.1f}%",
                 help="Percentage of orders fulfilled on time"
             )
 
         with col4:
             st.metric(
                 "Customer Satisfaction",
-                f"{analytics['customer_satisfaction']:.1f}/5",
+                f"{customer_satisfaction:.1f}/5",
                 help="Average customer rating"
             )
 
@@ -458,14 +464,20 @@ def show_order_analytics():
         # Monthly performance metrics
         st.markdown("**📊 Key Performance Metrics**")
         try:
+            # Convert analytics values to numbers (API might return strings)
+            chart_orders = int(analytics.get('orders_this_month', 0) or 0)
+            chart_avg_value = float(analytics.get('avg_order_value', 0) or 0)
+            chart_fulfillment = float(analytics.get('fulfillment_rate', 0) or 0)
+            chart_satisfaction = float(analytics.get('customer_satisfaction', 0) or 0)
+            
             # Create a simple metrics visualization
             metrics_data = {
                 'Metric': ['Orders', 'Avg Value (₪)', 'Fulfillment %', 'Satisfaction'],
                 'Value': [
-                    analytics['orders_this_month'],
-                    analytics['avg_order_value'],
-                    analytics['fulfillment_rate'],
-                    analytics['customer_satisfaction'] * 20  # Scale to make visible
+                    chart_orders,
+                    chart_avg_value,
+                    chart_fulfillment,
+                    chart_satisfaction * 20  # Scale to make visible
                 ]
             }
 
