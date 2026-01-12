@@ -9,11 +9,36 @@ from packages.db.session import get_async_db
 from packages.db.models import CartStatus
 from .service import CartService
 from .models import (
-    Cart, CartList, CartWithItems, CartCreate, CartUpdate,
+    Cart, CartItem, CartList, CartWithItems, CartCreate, CartUpdate,
     AddToCartRequest, UpdateCartItemRequest
 )
 
 router = APIRouter(prefix="/cart", tags=["cart"])
+
+
+def serialize_cart_with_items(cart, totals: dict) -> CartWithItems:
+    """Helper to properly serialize cart ORM model to Pydantic response."""
+    return CartWithItems(
+        id=cart.id,
+        session_id=cart.session_id,
+        customer_id=cart.customer_id,
+        status=cart.status.value if hasattr(cart.status, 'value') else cart.status,
+        created_at=cart.created_at,
+        updated_at=cart.updated_at,
+        items=[
+            CartItem(
+                id=item.id,
+                cart_id=item.cart_id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                unit_price=item.unit_price,
+                created_at=item.created_at,
+                updated_at=item.updated_at
+            ) for item in cart.items
+        ],
+        total_amount=totals["total"],
+        item_count=totals["item_count"]
+    )
 
 
 @router.get("/", response_model=CartList)
@@ -57,14 +82,8 @@ async def get_cart(
             detail="Cart not found"
         )
 
-    # Calculate totals
     totals = await CartService.get_cart_totals(db, cart_id)
-
-    return CartWithItems(
-        **cart.__dict__,
-        total_amount=totals["total"],
-        item_count=totals["item_count"]
-    )
+    return serialize_cart_with_items(cart, totals)
 
 
 @router.get("/session/{session_id}", response_model=CartWithItems)
@@ -88,14 +107,8 @@ async def get_cart_by_session(
             updated_at=None
         )
 
-    # Calculate totals
     totals = await CartService.get_cart_totals(db, cart.id)
-
-    return CartWithItems(
-        **cart.__dict__,
-        total_amount=totals["total"],
-        item_count=totals["item_count"]
-    )
+    return serialize_cart_with_items(cart, totals)
 
 
 @router.post("/", response_model=Cart, status_code=status.HTTP_201_CREATED)
@@ -166,14 +179,8 @@ async def add_item_to_cart(
                 detail="Failed to add item to cart"
             )
 
-        # Calculate totals
         totals = await CartService.get_cart_totals(db, cart.id)
-
-        return CartWithItems(
-            **cart.__dict__,
-            total_amount=totals["total"],
-            item_count=totals["item_count"]
-        )
+        return serialize_cart_with_items(cart, totals)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -182,7 +189,7 @@ async def add_item_to_cart(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error"
+            detail=f"Internal server error: {str(e)}"
         )
 
 
@@ -201,14 +208,8 @@ async def update_cart_item(
                 detail="Cart item not found"
             )
 
-        # Calculate totals
         totals = await CartService.get_cart_totals(db, cart.id)
-
-        return CartWithItems(
-            **cart.__dict__,
-            total_amount=totals["total"],
-            item_count=totals["item_count"]
-        )
+        return serialize_cart_with_items(cart, totals)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -217,7 +218,7 @@ async def update_cart_item(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error"
+            detail=f"Internal server error: {str(e)}"
         )
 
 
@@ -235,18 +236,12 @@ async def remove_cart_item(
                 detail="Cart item not found"
             )
 
-        # Calculate totals
         totals = await CartService.get_cart_totals(db, cart.id)
-
-        return CartWithItems(
-            **cart.__dict__,
-            total_amount=totals["total"],
-            item_count=totals["item_count"]
-        )
+        return serialize_cart_with_items(cart, totals)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error"
+            detail=f"Internal server error: {str(e)}"
         )
 
 

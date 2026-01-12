@@ -50,9 +50,9 @@ def get_category_emoji(product):
 def add_to_cart_api(product_id, quantity, session_id):
     """Add product to cart via API."""
     cart_data = {
-        'product_id': product_id,
-        'quantity': quantity,
-        'session_id': session_id
+        'product_id': str(product_id),  # Ensure string UUID format
+        'quantity': float(quantity),     # Ensure numeric (Decimal-compatible)
+        'session_id': str(session_id)
     }
     return make_api_request("POST", "/api/cart/add-item", cart_data)
 
