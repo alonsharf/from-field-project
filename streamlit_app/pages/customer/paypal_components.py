@@ -1,7 +1,6 @@
 """PayPal payment components for customer checkout."""
 
 import streamlit as st
-import requests
 import os
 from typing import Dict, Any, Optional
 import uuid
@@ -9,28 +8,18 @@ import uuid
 from packages.api_client import make_api_request
 
 
-def get_api_base_url():
-    """Get API base URL from environment or default."""
-    return os.getenv("API_BASE_URL", "http://localhost:8000")
-
-
 def create_paypal_payment(order_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Create PayPal payment via API."""
+    """Create PayPal payment via API using centralized client."""
     try:
-        api_base = get_api_base_url()
+        # First, create the order using centralized API client
+        order_response = make_api_request("POST", "/api/orders/", order_data)
 
-        # First, create the order
-        order_response = requests.post(
-            f"{api_base}/api/orders/",
-            json=order_data,
-            headers={"Content-Type": "application/json"}
-        )
+        if not order_response:
+            return {"success": False, "error": "Failed to create order"}
 
-        if order_response.status_code not in [200, 201]:
-            return {"success": False, "error": f"Failed to create order (HTTP {order_response.status_code})"}
-
-        order = order_response.json()
-        order_id = order["id"]
+        order_id = order_response.get("id")
+        if not order_id:
+            return {"success": False, "error": "Order created but no ID returned"}
 
         # Create PayPal payment
         payment_data = {
@@ -39,52 +28,48 @@ def create_paypal_payment(order_data: Dict[str, Any]) -> Dict[str, Any]:
             "cancel_url": f"{os.getenv('FRONTEND_BASE_URL', 'http://localhost:8501')}/payment/cancel"
         }
 
-        payment_response = requests.post(
-            f"{api_base}/api/payments/paypal/create",
-            json=payment_data,
-            headers={"Content-Type": "application/json"}
-        )
+        payment_response = make_api_request("POST", "/api/payments/paypal/create", payment_data)
 
-        if payment_response.status_code == 200:
-            payment_result = payment_response.json()
-            return {
-                "success": True,
-                "order_id": order_id,
-                **payment_result
-            }
-        else:
-            # Get detailed error message
-            try:
-                error_detail = payment_response.json().get('detail', 'Unknown PayPal error')
-                if 'invalid_client' in error_detail or 'Authentication failed' in error_detail:
-                    return {"success": False, "error": "PayPal credentials not configured. Please contact the administrator."}
+        if payment_response:
+            # Check if it's a successful payment response with approval_url
+            if payment_response.get("approval_url"):
+                return {
+                    "success": True,
+                    "order_id": order_id,
+                    **payment_response
+                }
+            # Check for error in response
+            elif payment_response.get("detail"):
+                error_detail = payment_response.get("detail", "Unknown PayPal error")
+                if 'invalid_client' in str(error_detail) or 'Authentication failed' in str(error_detail):
+                    return {"success": False, "order_id": order_id, "error": "PayPal credentials not configured. Please contact the administrator."}
                 else:
-                    return {"success": False, "error": f"PayPal error: {error_detail}"}
-            except:
-                return {"success": False, "error": f"Failed to create PayPal payment (HTTP {payment_response.status_code})"}
+                    return {"success": False, "order_id": order_id, "error": f"PayPal error: {error_detail}"}
+            else:
+                return {
+                    "success": True,
+                    "order_id": order_id,
+                    **payment_response
+                }
+        else:
+            return {"success": False, "order_id": order_id, "error": "Failed to create PayPal payment"}
 
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 
 def execute_paypal_payment(payment_id: str, payer_id: str) -> Dict[str, Any]:
-    """Execute PayPal payment after approval."""
+    """Execute PayPal payment after approval using centralized client."""
     try:
-        api_base = get_api_base_url()
-
         execution_data = {
             "payment_id": payment_id,
             "payer_id": payer_id
         }
 
-        response = requests.post(
-            f"{api_base}/api/payments/paypal/execute",
-            json=execution_data,
-            headers={"Content-Type": "application/json"}
-        )
+        response = make_api_request("POST", "/api/payments/paypal/execute", execution_data)
 
-        if response.status_code == 200:
-            return response.json()
+        if response:
+            return {"success": True, **response}
         else:
             return {"success": False, "error": "Failed to execute PayPal payment"}
 

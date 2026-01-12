@@ -52,9 +52,9 @@ def add_to_cart_api(product_id, quantity, session_id):
     cart_data = {
         'product_id': product_id,
         'quantity': quantity,
-        'customer_session_id': session_id
+        'session_id': session_id
     }
-    return make_api_request("POST", "/api/cart/add", cart_data)
+    return make_api_request("POST", "/api/cart/add-item", cart_data)
 
 def get_or_create_session_id():
     """Get or create customer session ID."""
@@ -416,12 +416,22 @@ def show_product_list_item(product):
         st.divider()
 
 def add_to_cart(product, quantity):
-    """Add product to cart using session state."""
+    """Add product to cart using both API and session state."""
     # Initialize cart if it doesn't exist
     if 'cart' not in st.session_state:
         st.session_state.cart = []
+    
+    # Get session ID for API call
+    session_id = get_or_create_session_id()
+    
+    # Call API to persist cart (non-blocking - continue even if fails)
+    api_response = add_to_cart_api(product['id'], quantity, session_id)
+    
+    if not api_response:
+        # API failed, but continue with session state for UI
+        st.warning("⚠️ Cart sync issue - your cart will be saved locally.")
 
-    # Check if product already in cart
+    # Check if product already in cart (session state for UI responsiveness)
     for item in st.session_state.cart:
         if item['id'] == product['id']:
             item['quantity'] += quantity

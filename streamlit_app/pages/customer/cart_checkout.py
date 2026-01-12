@@ -549,9 +549,68 @@ def validate_checkout_form(email, phone, first_name, last_name, address, city, z
 
 def process_order(email, phone, first_name, last_name, address, city, state, zip_code,
                  delivery_instructions, delivery_date, delivery_time, payment_method, total):
-    """Process the order submission."""
-    # Generate order number
-    order_number = f"ORD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    """Process the order submission by calling the API."""
+    # Get cart data
+    cart_data = st.session_state.get('cart_data', {})
+    cart_items = cart_data.get('items', [])
+    
+    if not cart_items:
+        st.error("❌ Cart is empty. Cannot place order.")
+        return
+    
+    # Get customer ID from session
+    customer_id = st.session_state.get('user_id')
+    if not customer_id:
+        st.error("❌ Please log in to place an order.")
+        return
+    
+    # Get farmer ID from first product or use admin farmer
+    farmer_response = make_api_request("GET", "/api/auth/farmer/admin")
+    if not farmer_response or 'id' not in farmer_response:
+        st.error("❌ Could not retrieve farmer information. Please try again.")
+        return
+    farmer_id = farmer_response['id']
+    
+    # Calculate delivery fee
+    cart_total = cart_data.get('total', 0)
+    delivery_fee = 0.00 if cart_total >= 50.00 else 5.99
+    
+    # Prepare order items
+    order_items = []
+    for item in cart_items:
+        order_items.append({
+            "product_id": item['id'],
+            "quantity": float(item['quantity']),
+            "unit_price": float(item['price'])
+        })
+    
+    # Prepare order data for API
+    order_data = {
+        "customer_id": customer_id,
+        "farmer_id": farmer_id,
+        "shipping_name": f"{first_name} {last_name}",
+        "shipping_phone": phone,
+        "shipping_address1": address,
+        "shipping_address2": "",
+        "shipping_city": city,
+        "shipping_postal_code": zip_code,
+        "shipping_country": "Israel",
+        "customer_notes": delivery_instructions or f"Delivery: {delivery_date} - {delivery_time}",
+        "shipping_amount": delivery_fee,
+        "items": order_items
+    }
+    
+    # Call API to create order
+    with st.spinner("Creating your order..."):
+        order_response = create_order_api(order_data)
+    
+    if not order_response:
+        st.error("❌ Failed to create order. Please try again.")
+        return
+    
+    # Get order details from response
+    order_id = order_response.get('id', 'N/A')
+    order_number = f"ORD-{str(order_id)[:8].upper()}"
 
     # Clear cart from session state
     st.session_state.cart = []
@@ -569,6 +628,7 @@ def process_order(email, phone, first_name, last_name, address, city, state, zip
 
     with col1:
         st.markdown(f"**Order Number:** {order_number}")
+        st.markdown(f"**Order ID:** `{order_id}`")
         st.markdown(f"**Customer:** {first_name} {last_name}")
         st.markdown(f"**Email:** {email}")
         st.markdown(f"**Phone:** {phone}")
