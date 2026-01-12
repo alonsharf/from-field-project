@@ -28,16 +28,13 @@ def show_farm_profile():
     st.markdown("---")
 
     # Tabs for different profile sections
-    tab1, tab2, tab3 = st.tabs(["Farm Details", "Contact Information", "Profile Picture"])
+    tab1, tab2 = st.tabs(["Farm Details", "Contact Information"])
 
     with tab1:
         show_farm_details()
 
     with tab2:
         show_contact_information()
-
-    with tab3:
-        show_profile_picture()
 
 def show_farm_details():
     """Display farm details form."""
@@ -271,38 +268,3 @@ def show_contact_information():
                     st.error(f"❌ Error saving contact information: {str(e)}")
             else:
                 st.error("❌ Email address is required")
-
-def show_profile_picture():
-    """Display profile picture upload interface."""
-    st.subheader("📷 Profile Picture")
-
-    col1, col2 = st.columns([1, 2])
-
-    with col1:
-        # Current profile picture placeholder
-        st.image("https://via.placeholder.com/200x200?text=Farm+Photo",
-                 caption="Current Profile Picture", width=200)
-
-    with col2:
-        st.markdown("**Upload a new profile picture for your farm**")
-        st.markdown("This image will be displayed alongside your farm information to customers.")
-
-        uploaded_file = st.file_uploader(
-            "Choose an image...",
-            type=['png', 'jpg', 'jpeg'],
-            help="Upload a high-quality image that represents your farm (max 5MB)"
-        )
-
-        if uploaded_file is not None:
-            st.image(uploaded_file, caption="Preview", width=200)
-
-            if st.button("📤 Upload Profile Picture", type="primary"):
-                st.success("✅ Profile picture uploaded successfully!")
-                # Here you would typically upload to cloud storage and save URL to API
-
-        st.markdown("---")
-        st.markdown("**Tips for a great farm photo:**")
-        st.markdown("• Use a high-quality, well-lit image")
-        st.markdown("• Show your farm, crops, or farming in action")
-        st.markdown("• Keep it professional and inviting")
-        st.markdown("• Square images work best (1:1 ratio)")
