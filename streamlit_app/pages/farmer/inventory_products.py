@@ -38,9 +38,10 @@ def create_product(product_data):
     response = make_api_request("POST", "/api/products/", product_data)
     return response['id'] if response else None
 
-def update_product_stock(product_id, stock_data):
+def update_product_stock(product_id, quantity_change):
     """Update product stock via API."""
-    return make_api_request("PUT", f"/api/products/{product_id}/stock", stock_data)
+    # quantity_change is passed as query parameter, not JSON body
+    return make_api_request("PUT", f"/api/products/{product_id}/stock?quantity_change={quantity_change}")
 
 def show_inventory_products():
     """Display inventory and product management interface."""
@@ -328,8 +329,10 @@ def show_stock_management():
                         st.markdown("**Actions**")
                         if st.button(f"Update Stock", key=f"update_{i}", type="primary"):
                             final_stock = new_stock + adjustment
+                            # API expects quantity_change (delta), not absolute value
+                            quantity_change = final_stock - stock_quantity
                             try:
-                                if update_product_stock(product['id'], final_stock):
+                                if update_product_stock(product['id'], quantity_change):
                                     st.success(f"Stock updated to {final_stock:.1f} {unit_label}")
                                     st.rerun()
                                 else:
