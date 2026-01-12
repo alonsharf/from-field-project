@@ -203,8 +203,6 @@ def show_login_page():
                         else:
                             st.error("Please enter both email and password")
 
-                st.info("💡 Existing customers can use: alice@example.com / password123")
-
             elif content_type == "customer_register":
                 st.header("Register New Customer Account")
                 st.markdown("Create a new account to start shopping from our farm.")
@@ -297,8 +295,6 @@ def show_login_page():
                                 st.error("Invalid email or password")
                         else:
                             st.error("Please enter both email and password")
-
-                st.info("💡 Default: john@greenvalley.com / admin123")
 
     # Button to toggle admin access visibility
     st.markdown("---")
