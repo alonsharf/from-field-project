@@ -168,11 +168,18 @@ def show_product_catalog():
                         with col4:
                             st.markdown("**Actions**")
                             col_edit, col_delete = st.columns(2)
+                            is_editing = st.session_state.get('editing_product') == product['id']
                             with col_edit:
-                                if st.button("✏️ Edit", key=f"edit_{product['id']}"):
-                                    st.session_state.editing_product = product['id']
+                                edit_label = "✏️ Close" if is_editing else "✏️ Edit"
+                                if st.button(edit_label, key=f"edit_{product['id']}", use_container_width=True):
+                                    # Toggle edit mode
+                                    if is_editing:
+                                        st.session_state.editing_product = None
+                                    else:
+                                        st.session_state.editing_product = product['id']
+                                    st.rerun()
                             with col_delete:
-                                if st.button("🗑️ Delete", key=f"delete_{product['id']}", type="secondary"):
+                                if st.button("🗑️ Delete", key=f"delete_{product['id']}", type="secondary", use_container_width=True):
                                     st.session_state.deleting_product = product['id']
 
                         # Product description
