@@ -34,7 +34,7 @@ def serialize_cart_with_items(cart, totals: dict) -> CartWithItems:
                 unit_price=item.unit_price,
                 created_at=item.created_at,
                 updated_at=item.updated_at
-            ) for item in cart.items
+            ) for item in cart.cart_items  # Fixed: cart_items not items
         ],
         total_amount=totals["total"],
         item_count=totals["item_count"]

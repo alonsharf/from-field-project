@@ -54,7 +54,7 @@ class CartService:
         # Get paginated results with items
         query = (
             query.options(
-                selectinload(CartModel.items).selectinload(CartItemModel.product)
+                selectinload(CartModel.cart_items).selectinload(CartItemModel.product)
             )
             .offset(skip)
             .limit(limit)
@@ -72,7 +72,7 @@ class CartService:
             select(CartModel)
             .where(CartModel.id == cart_id)
             .options(
-                selectinload(CartModel.items).selectinload(CartItemModel.product)
+                selectinload(CartModel.cart_items).selectinload(CartItemModel.product)
             )
         )
         result = await db.execute(query)
@@ -89,7 +89,7 @@ class CartService:
             select(CartModel)
             .where(and_(CartModel.session_id == session_id, CartModel.status == status))
             .options(
-                selectinload(CartModel.items).selectinload(CartItemModel.product)
+                selectinload(CartModel.cart_items).selectinload(CartItemModel.product)
             )
         )
         result = await db.execute(query)
@@ -319,7 +319,7 @@ class CartService:
         total = Decimal('0')
         item_count = 0
 
-        for item in cart.items:
+        for item in cart.cart_items:
             total += item.quantity * item.unit_price
             item_count += 1
 
