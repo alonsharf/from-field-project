@@ -6,6 +6,8 @@ import os
 from typing import Dict, Any, Optional
 import uuid
 
+from packages.api_client import make_api_request
+
 
 def get_api_base_url():
     """Get API base URL from environment or default."""
@@ -320,8 +322,11 @@ def prepare_order_data_for_api(customer_info: Dict[str, Any], cart_data: Dict[st
     if not customer_id:
         raise ValueError("User must be logged in to place an order")
 
-    # Get the farmer ID (admin farmer)
-    farmer_id = "07289dd8-1873-4ce1-a6bc-3830ebd20d6f"  # John Green's ID from database
+    # Get the farmer ID dynamically from API (admin farmer)
+    farmer_response = make_api_request("GET", "/api/auth/farmer/admin")
+    if not farmer_response or 'id' not in farmer_response:
+        raise ValueError("Could not retrieve farmer information")
+    farmer_id = farmer_response['id']
 
     # Calculate delivery fee
     cart_total = cart_data.get('total', 0)
