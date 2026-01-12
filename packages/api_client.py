@@ -33,6 +33,9 @@ def make_api_request(method: str, endpoint: str, data=None):
                 raise ValueError(f"Unsupported HTTP method: {method}")
 
             response.raise_for_status()
+            # Handle 204 No Content (e.g., DELETE requests)
+            if response.status_code == 204:
+                return True
             return response.json()
     except httpx.HTTPStatusError as e:
         st.error(f"API request failed: {e.response.status_code} - {e.response.text}")

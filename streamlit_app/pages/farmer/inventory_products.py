@@ -43,6 +43,14 @@ def update_product_stock(product_id, quantity_change):
     # quantity_change is passed as query parameter, not JSON body
     return make_api_request("PUT", f"/api/products/{product_id}/stock?quantity_change={quantity_change}")
 
+def update_product(product_id, product_data):
+    """Update a product via API."""
+    return make_api_request("PUT", f"/api/products/{product_id}", product_data)
+
+def delete_product(product_id):
+    """Delete a product via API."""
+    return make_api_request("DELETE", f"/api/products/{product_id}")
+
 def show_inventory_products():
     """Display inventory and product management interface."""
     st.title("🥕 Inventory & Products")
@@ -159,9 +167,13 @@ def show_product_catalog():
 
                         with col4:
                             st.markdown("**Actions**")
-                            if st.button("✏️ Edit", key=f"edit_{product['id']}"):
-                                st.session_state.editing_product = product['id']
-                                st.info("Product editing would open here")
+                            col_edit, col_delete = st.columns(2)
+                            with col_edit:
+                                if st.button("✏️ Edit", key=f"edit_{product['id']}"):
+                                    st.session_state.editing_product = product['id']
+                            with col_delete:
+                                if st.button("🗑️ Delete", key=f"delete_{product['id']}", type="secondary"):
+                                    st.session_state.deleting_product = product['id']
 
                         # Product description
                         if product.get('description'):
@@ -170,6 +182,81 @@ def show_product_catalog():
                         # Stock level indicator
                         stock_percentage = min(100, (stock_quantity / 50) * 100)  # Assuming 50 is max display
                         st.progress(stock_percentage / 100)
+
+                        # Delete confirmation
+                        if st.session_state.get('deleting_product') == product['id']:
+                            st.warning("⚠️ Are you sure you want to delete this product?")
+                            col_yes, col_no = st.columns(2)
+                            with col_yes:
+                                if st.button("Yes, Delete", key=f"confirm_delete_{product['id']}", type="primary"):
+                                    try:
+                                        delete_product(product['id'])
+                                        st.success(f"✅ {product['name']} deleted successfully!")
+                                        st.session_state.deleting_product = None
+                                        st.rerun()
+                                    except Exception as e:
+                                        st.error(f"Failed to delete: {str(e)}")
+                            with col_no:
+                                if st.button("Cancel", key=f"cancel_delete_{product['id']}"):
+                                    st.session_state.deleting_product = None
+                                    st.rerun()
+
+                        # Edit form
+                        if st.session_state.get('editing_product') == product['id']:
+                            st.markdown("---")
+                            st.markdown("### ✏️ Edit Product")
+                            with st.form(f"edit_form_{product['id']}"):
+                                edit_col1, edit_col2 = st.columns(2)
+                                
+                                with edit_col1:
+                                    new_name = st.text_input("Product Name", value=product['name'])
+                                    new_category = st.selectbox(
+                                        "Category",
+                                        ["Vegetables", "Fruits", "Herbs", "Grains", "Dairy", "Other"],
+                                        index=["Vegetables", "Fruits", "Herbs", "Grains", "Dairy", "Other"].index(product['category']) if product['category'] in ["Vegetables", "Fruits", "Herbs", "Grains", "Dairy", "Other"] else 0
+                                    )
+                                    new_price = st.number_input("Price per Unit", min_value=0.01, value=float(product['price_per_unit']), step=0.01)
+                                
+                                with edit_col2:
+                                    new_unit = st.selectbox(
+                                        "Unit of Measure",
+                                        ["lb", "kg", "oz", "g", "each", "dozen", "bunch", "bag"],
+                                        index=["lb", "kg", "oz", "g", "each", "dozen", "bunch", "bag"].index(product['unit_label']) if product['unit_label'] in ["lb", "kg", "oz", "g", "each", "dozen", "bunch", "bag"] else 0
+                                    )
+                                    new_organic = st.checkbox("Organic Product", value=product.get('is_organic', False))
+                                    new_active = st.checkbox("Active (visible to customers)", value=product.get('is_active', True))
+                                
+                                new_description = st.text_area("Description", value=product.get('description', '') or '')
+                                
+                                form_col1, form_col2 = st.columns(2)
+                                with form_col1:
+                                    submitted = st.form_submit_button("💾 Save Changes", type="primary")
+                                with form_col2:
+                                    cancelled = st.form_submit_button("Cancel")
+                                
+                                if submitted:
+                                    try:
+                                        update_data = {
+                                            'name': new_name,
+                                            'category': new_category,
+                                            'unit_label': new_unit,
+                                            'price_per_unit': new_price,
+                                            'description': new_description,
+                                            'is_organic': new_organic,
+                                            'is_active': new_active
+                                        }
+                                        if update_product(product['id'], update_data):
+                                            st.success(f"✅ {new_name} updated successfully!")
+                                            st.session_state.editing_product = None
+                                            st.rerun()
+                                        else:
+                                            st.error("Failed to update product.")
+                                    except Exception as e:
+                                        st.error(f"Error: {str(e)}")
+                                
+                                if cancelled:
+                                    st.session_state.editing_product = None
+                                    st.rerun()
 
     except Exception as e:
         st.error("Unable to load products from database.")
