@@ -13,29 +13,44 @@ from packages.api_client import make_api_request
 # Authentication functions
 def authenticate_farmer(email: str, password: str):
     """Authenticate farmer via API."""
+    # Normalize email: trim whitespace and convert to lowercase
+    clean_email = email.strip().lower() if email else ""
+    clean_password = password.strip() if password else ""
+    
     response = make_api_request("POST", "/api/auth/farmer/login", {
-        "email": email,
-        "password": password
+        "email": clean_email,
+        "password": clean_password
     })
     return response
 
 def authenticate_customer(email: str, password: str):
     """Authenticate customer via API."""
+    # Normalize email: trim whitespace and convert to lowercase
+    clean_email = email.strip().lower() if email else ""
+    clean_password = password.strip() if password else ""
+    
     response = make_api_request("POST", "/api/auth/customer/login", {
-        "email": email,
-        "password": password
+        "email": clean_email,
+        "password": clean_password
     })
     return response
 
 def register_customer(first_name: str, last_name: str, email: str, password: str,
                      phone: str = None, address_data: dict = None):
     """Register new customer via API."""
+    # Normalize inputs: trim whitespace, lowercase email
+    clean_email = email.strip().lower() if email else ""
+    clean_password = password.strip() if password else ""
+    clean_first_name = first_name.strip() if first_name else ""
+    clean_last_name = last_name.strip() if last_name else ""
+    clean_phone = phone.strip() if phone else None
+    
     register_data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "email": email,
-        "password": password,
-        "phone": phone,
+        "first_name": clean_first_name,
+        "last_name": clean_last_name,
+        "email": clean_email,
+        "password": clean_password,
+        "phone": clean_phone,
     }
 
     if address_data:
