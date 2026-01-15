@@ -163,14 +163,14 @@ def show_login_page():
     tab_list = ["🛒 Customer Login", "📝 Register New Account"]
     tab_content = ["customer_login", "customer_register"]
 
-    # Add admin tab if it should be visible
+    # Add admin tab if it should be visible (always at the end)
     if st.session_state.show_admin_access:
         tab_list.append("🔐 Administrative Access")
         tab_content.append("admin_login")
 
     # Reorder tabs to show the active tab first if it's admin
     if st.session_state.show_admin_access and st.session_state.active_tab == 2:
-        # Put admin tab first to auto-select it
+        # Put admin tab first to auto-select it, but keep customer/register in original order
         tab_list = ["🔐 Administrative Access", "🛒 Customer Login", "📝 Register New Account"]
         tab_content = ["admin_login", "customer_login", "customer_register"]
 
