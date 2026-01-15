@@ -408,7 +408,7 @@ def show_order_analytics():
         with col2:
             st.metric(
                 "Average Order Value",
-                f"₪{avg_order_value:.2f}",
+                f"₪{analytics['avg_order_value']:.2f}",
                 help="Average value per order"
             )
 
