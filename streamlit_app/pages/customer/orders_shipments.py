@@ -70,8 +70,7 @@ def display_product_image(product, use_column_width=True, width=None):
         justify-content: center;
         align-items: center;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        {'width: ' + str(width) + 'px;' if width else ''}
-    ">
+        {'width: ' + str(width) + 'px;' if width else ''}">
         <div style="font-size: {font_size}px; margin-bottom: 4px;">{emoji}</div>
         <div style="color: #4a5568; font-weight: 600; margin-bottom: 1px; font-size: {name_size}px; line-height: 1.2;">{product.get('name', 'Product')}</div>
         <div style="color: #718096; font-size: {caption_size}px;">Image coming soon</div>
@@ -106,7 +105,12 @@ def get_current_user():
     return None  # Return None if not properly authenticated
 
 def get_customer_order_history(customer_id, limit=50):
-    """Get customer order history from API."""
+    """Get customer order history from API - ONLY for authenticated user."""
+    # SECURITY: Ensure we only return data for the authenticated user
+    current_user = get_current_user()
+    if not current_user or not customer_id or current_user.get('id') != customer_id:
+        return []  # Return empty if not properly authenticated
+
     try:
         # Get customer-specific orders and filter for completed orders
         customer_orders = get_customer_orders_only()
@@ -135,7 +139,12 @@ def get_customer_order_history(customer_id, limit=50):
         return []
 
 def get_customer_orders(customer_id, limit=10):
-    """Get customer orders with tracking from API."""
+    """Get customer orders with tracking from API - ONLY for authenticated user."""
+    # SECURITY: Ensure we only return data for the authenticated user
+    current_user = get_current_user()
+    if not current_user or not customer_id or current_user.get('id') != customer_id:
+        return []  # Return empty if not properly authenticated
+
     try:
         # Get customer-specific orders
         customer_orders_data = get_customer_orders_only()
@@ -286,11 +295,11 @@ def show_order_history():
         )
 
     try:
-        # Get current user (for demo, we'll get all orders since we don't have authentication)
+        # Get current authenticated user - SECURITY: Only show user's own orders
         current_user = get_current_user()
         customer_id = current_user.get('id') if current_user else None
 
-        # Get order history from database
+        # Get order history from database - only for authenticated user
         order_history = get_customer_order_history(customer_id, limit=50)
 
         if not order_history:

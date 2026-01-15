@@ -244,16 +244,6 @@ def show_add_product_form():
             help="Detailed description for customers"
         )
 
-        # Product image upload
-        st.markdown("**Product Image (optional)**")
-        uploaded_image = st.file_uploader(
-            "Upload product image",
-            type=['png', 'jpg', 'jpeg'],
-            help="High-quality image of your product"
-        )
-
-        if uploaded_image:
-            st.image(uploaded_image, caption="Product Preview", width=200)
 
         submitted = st.form_submit_button("💾 Add Product", type="primary")
 
@@ -327,9 +317,9 @@ def show_stock_management():
 
                     with col2:
                         adjustment = st.number_input(
-                            "Adjustment (+/-)",
+                            "Add (+) or Remove (-) Stock",
                             value=0.0,
-                            step=0.1,
+                            step=0.5,
                             key=f"adjustment_{i}",
                             help="Add or subtract from current stock"
                         )

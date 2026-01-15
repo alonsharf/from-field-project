@@ -166,12 +166,6 @@ def show_empty_cart():
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
-        st.image(
-            "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
-            caption="Fresh produce waiting for you!",
-            use_column_width=True
-        )
-
         if st.button("🔍 Browse Products", type="primary", use_container_width=True):
             st.session_state.current_page = "Browse Products"
             st.rerun()
