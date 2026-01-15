@@ -37,7 +37,7 @@ def show_farmer_dashboard():
     # Enhanced agricultural header
     header_html = """
     <div class="agricultural-header">
-        <h1>📊 Farm matan Management Dashboard</h1>
+        <h1>📊 Farm Management Dashboard</h1>
         <p>Welcome to your comprehensive farm operations overview</p>
     </div>
     """
