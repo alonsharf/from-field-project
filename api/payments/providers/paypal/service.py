@@ -41,7 +41,7 @@ class PayPalProvider(BasePaymentProvider):
     def create_payment(
         self,
         amount: Decimal,
-        currency: str = "USD",
+        currency: str = "ILS",
         description: str = "Farm Order Payment",
         return_url: str = None,
         cancel_url: str = None,
@@ -152,7 +152,7 @@ class PayPalProvider(BasePaymentProvider):
             if amount:
                 refund_data["amount"] = {
                     "total": str(amount),
-                    "currency": "USD"
+                    "currency": "ILS"
                 }
 
             refund = sale.refund(refund_data)

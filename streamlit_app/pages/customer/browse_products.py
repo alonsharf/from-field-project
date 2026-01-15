@@ -129,7 +129,7 @@ def show_browse_products():
             max_value=20.0,
             value=20.0,
             step=0.50,
-            format="$%.2f"
+            format="₪%.2f"
         )
 
         # Availability filter
@@ -285,7 +285,7 @@ def show_product_card(product):
 
         # Product name and price
         st.markdown(f"**{product['name']}**")
-        st.markdown(f"**${product['price']:.2f}** /{product['unit']}")
+        st.markdown(f"**₪{product['price']:.2f}** /{product['unit']}")
 
         # Organic badge
         if product.get('is_organic', False):
@@ -353,7 +353,7 @@ def show_product_list_item(product):
                     st.success("🌱 Organic")
 
             with col2b:
-                st.markdown(f"## **${product['price']:.2f}**")
+                st.markdown(f"## **₪{product['price']:.2f}**")
                 st.markdown(f"_{product['unit']}_")
 
             # Description
@@ -449,7 +449,7 @@ def show_product_details(product):
             display_product_image(product, use_column_width=True)
 
         with col2:
-            st.markdown(f"**Price:** ${product['price']:.2f} /{product['unit']}")
+            st.markdown(f"**Price:** ₪{product['price']:.2f} /{product['unit']}")
             category = product.get('category', 'Fresh Produce')
             st.markdown(f"**Category:** {category}")
 

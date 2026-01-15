@@ -196,12 +196,12 @@ def show_shopping_cart():
         st.metric("Items in Cart", total_items)
 
     with col2:
-        st.metric("Subtotal", f"${cart_total:.2f}")
+        st.metric("Subtotal", f"₪{cart_total:.2f}")
 
     with col3:
         # Calculate delivery fee
         delivery_fee = 0.00 if cart_total >= 50.00 else 5.99
-        st.metric("Delivery Fee", f"${delivery_fee:.2f}")
+        st.metric("Delivery Fee", f"₪{delivery_fee:.2f}")
 
     st.markdown("---")
 
@@ -217,7 +217,7 @@ def show_shopping_cart():
 
             with col2:
                 st.markdown(f"**{item['name']}**")
-                st.markdown(f"${item['price']:.2f} {item['unit']}")
+                st.markdown(f"₪{item['price']:.2f} {item['unit']}")
 
             with col3:
                 # Quantity selector with update functionality
@@ -236,7 +236,7 @@ def show_shopping_cart():
                     st.rerun()
 
             with col4:
-                st.markdown(f"**${item_total:.2f}**")
+                st.markdown(f"**₪{item_total:.2f}**")
 
             with col5:
                 if st.button("🗑️", key=f"remove_{i}", help="Remove from cart"):
@@ -289,14 +289,14 @@ def show_shopping_cart():
     with col2:
         # Price breakdown
         st.markdown("**Price Breakdown:**")
-        st.markdown(f"Subtotal: ${cart_total:.2f}")
-        st.markdown(f"Delivery: ${delivery_fee:.2f}")
+        st.markdown(f"Subtotal: ₪{cart_total:.2f}")
+        st.markdown(f"Delivery: ₪{delivery_fee:.2f}")
 
         if delivery_fee == 0:
-            st.success("🎉 Free delivery (order over $50)")
+            st.success("🎉 Free delivery (order over ₪50)")
 
         total = cart_total + delivery_fee
-        st.markdown(f"**Total: ${total:.2f}**")
+        st.markdown(f"**Total: ₪{total:.2f}**")
 
 def show_checkout_process():
     """Display checkout process."""
@@ -452,9 +452,9 @@ def show_checkout_process():
         total = cart_total + delivery_fee
 
         st.markdown(f"**Items:** {total_items}")
-        st.markdown(f"**Subtotal:** ${cart_total:.2f}")
-        st.markdown(f"**Delivery:** ${delivery_fee:.2f}")
-        st.markdown(f"**Total:** ${total:.2f}")
+        st.markdown(f"**Subtotal:** ₪{cart_total:.2f}")
+        st.markdown(f"**Delivery:** ₪{delivery_fee:.2f}")
+        st.markdown(f"**Total:** ₪{total:.2f}")
 
         # Terms and conditions
         agree_terms = st.checkbox(
@@ -583,7 +583,7 @@ def process_order(email, phone, first_name, last_name, address, city, state, zip
         st.markdown(f"**Delivery Address:**")
         st.markdown(f"{address}")
         st.markdown(f"{city}, {state} {zip_code}")
-        st.markdown(f"**Total:** ${total:.2f}")
+        st.markdown(f"**Total:** ₪{total:.2f}")
 
     st.markdown(f"**Delivery:** {delivery_date} - {delivery_time}")
     st.markdown(f"**Payment:** {payment_method}")

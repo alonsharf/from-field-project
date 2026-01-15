@@ -253,7 +253,7 @@ def show_create_shipment():
                 )
 
                 insurance_value = st.number_input(
-                    "Insurance Value ($)",
+                    "Insurance Value (₪)",
                     min_value=0.0,
                     value=0.0,
                     step=1.0,
@@ -498,14 +498,14 @@ def show_logistics_settings():
 
     with col2:
         insurance_threshold = st.number_input(
-            "Insurance Threshold ($)",
+            "Insurance Threshold (₪)",
             min_value=0,
             value=50,
             help="Add insurance for orders above this amount"
         )
 
         signature_threshold = st.number_input(
-            "Signature Required Threshold ($)",
+            "Signature Required Threshold (₪)",
             min_value=0,
             value=100,
             help="Require signature for orders above this amount"

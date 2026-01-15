@@ -77,7 +77,7 @@ def get_customer_recent_activity(customer_id, limit=5):
         activity = {
             'date': order.get('created_at', '')[:10],
             'action': f"Order {order['status'].lower()}",
-            'details': f"Order total: ${float(order.get('total_amount', 0)):.2f}"
+            'details': f"Order total: ₪{float(order.get('total_amount', 0)):.2f}"
         }
         activities.append(activity)
 
@@ -293,7 +293,7 @@ def show_personal_information():
             st.metric("Total Orders", str(stats["total_orders"]))
 
         with col3:
-            st.metric("Total Spent", f"${stats['total_spent']:.2f}")
+            st.metric("Total Spent", f"₪{stats['total_spent']:.2f}")
 
 
     except Exception as e:
@@ -310,7 +310,7 @@ def show_personal_information():
             st.metric("Total Orders", "0")
 
         with col3:
-            st.metric("Total Spent", "$0.00")
+            st.metric("Total Spent", "₪0.00")
 
 
 def show_delivery_preferences():

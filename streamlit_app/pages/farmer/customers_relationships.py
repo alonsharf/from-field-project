@@ -146,7 +146,7 @@ def show_customer_orders(customer_id, customer_name):
                         st.markdown(f"**{order_number}**")
 
                     with col2:
-                        st.markdown(f"${total_amount:.2f}")
+                        st.markdown(f"₪{total_amount:.2f}")
 
                     with col3:
                         st.markdown(order['status'])
