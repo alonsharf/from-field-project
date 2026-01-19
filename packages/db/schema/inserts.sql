@@ -3,37 +3,23 @@
 
 --------------------------------------------------
 -- CATEGORIES
--- Matches UI options in: browse_products.py, inventory_products.py
 --------------------------------------------------
 INSERT INTO category (name, description) VALUES
 ('Vegetables', 'Fresh vegetables and leafy greens'),
 ('Fruits', 'Fresh seasonal fruits and berries'),
-('Herbs', 'Fresh culinary herbs and aromatics'),
-('Dairy', 'Fresh dairy products including milk, cheese, and eggs'),
-('Grains', 'Whole grains, flour, and grain-based products'),
-('Meat', 'Fresh meat and poultry products'),
-('Specialty Items', 'Specialty and artisan farm products'),
-('Other', 'Other farm products and miscellaneous items');
+('Herbs', 'Fresh culinary herbs and aromatics');
 
 --------------------------------------------------
 -- UNIT LABELS
--- Matches UI options in: inventory_products.py
 --------------------------------------------------
 INSERT INTO unit_label (name, abbreviation, description) VALUES
--- Original units
 ('lb', 'lb', 'Pound'),
 ('ear', 'ea', 'Per ear (corn)'),
 ('head', 'head', 'Per head (lettuce)'),
 ('bag', 'bag', 'Per bag'),
 ('bunch', 'bunch', 'Per bunch'),
 ('pint', 'pt', 'Pint container'),
-('pack', 'pack', 'Per pack'),
--- Additional units from UI
-('kg', 'kg', 'Kilogram'),
-('oz', 'oz', 'Ounce'),
-('g', 'g', 'Gram'),
-('each', 'ea', 'Per item/each'),
-('dozen', 'doz', 'Dozen (12 items)');
+('pack', 'pack', 'Per pack');
 
 --------------------------------------------------
 -- FARMERS

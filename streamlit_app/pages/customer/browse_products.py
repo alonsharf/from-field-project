@@ -104,136 +104,74 @@ def show_browse_products():
     st.markdown("### Discover fresh, locally grown produce")
     st.markdown("---")
 
-    # ============================================================
-    # PROMINENT SEARCH & FILTER SECTION (Top of Page)
-    # ============================================================
-    
-    # Large Search Bar
-    search_term = st.text_input(
-        "Search",
-        placeholder="🔍 Search for tomatoes, herbs, organic produce...",
-        label_visibility="collapsed",
-        key="main_search"
-    )
-    
-    st.markdown("")  # Spacing
-    
-    # Category Quick-Select Buttons
-    st.markdown("**Shop by Category**")
-    
-    # Category options - matches database categories in inserts.sql
-    category_options = [
-        ("🛒", "All", "All Categories"),
-        ("🥬", "Vegetables", "Vegetables"),
-        ("🍎", "Fruits", "Fruits"),
-        ("🌿", "Herbs", "Herbs"),
-        ("🥛", "Dairy", "Dairy"),
-        ("🌾", "Grains", "Grains"),
-        ("🥩", "Meat", "Meat"),
-        ("⭐", "Specialty", "Specialty Items"),
-        ("📦", "Other", "Other"),
-    ]
-    
-    # Initialize category in session state
-    if 'selected_category' not in st.session_state:
-        st.session_state.selected_category = "All Categories"
-    
-    # Create category button row
-    cat_cols = st.columns(len(category_options))
-    for i, (emoji, label, value) in enumerate(category_options):
-        with cat_cols[i]:
-            is_selected = st.session_state.selected_category == value
-            btn_type = "primary" if is_selected else "secondary"
-            if st.button(
-                f"{emoji} {label}", 
-                key=f"cat_btn_{value}",
-                use_container_width=True,
-                type=btn_type
-            ):
-                st.session_state.selected_category = value
-                st.rerun()
-    
-    category_filter = st.session_state.selected_category
-    
-    st.markdown("")  # Spacing
-    
-    # Filter Row - Compact horizontal filters
-    st.markdown("**Refine Results**")
-    filter_col1, filter_col2, filter_col3, filter_col4, filter_col5 = st.columns([2, 2, 2, 1, 1])
-    
-    with filter_col1:
-        price_range = st.select_slider(
-            "💰 Max Price",
-            options=[5.0, 10.0, 15.0, 20.0, 50.0],
-            value=50.0,
-            format_func=lambda x: f"₪{x:.0f}" if x < 50 else "Any"
+    # Search and filter sidebar
+    with st.sidebar:
+        st.markdown("## 🔎 Search & Filter")
+
+        # Search box
+        search_term = st.text_input(
+            "Search products",
+            placeholder="e.g., tomatoes, organic...",
+            help="Search by product name or description"
         )
-        # Convert "Any" back to high value
-        if price_range == 50.0:
-            price_range = 999.0
-    
-    with filter_col2:
+
+        # Category filter
+        category_filter = st.selectbox(
+            "Category",
+            ["All Categories", "Vegetables", "Fruits", "Herbs", "Grains", "Specialty Items"]
+        )
+
+        # Price range filter
+        st.markdown("**Price Range**")
+        price_range = st.slider(
+            "Max price per unit",
+            min_value=0.0,
+            max_value=20.0,
+            value=20.0,
+            step=0.50,
+            format="₪%.2f"
+        )
+
+        # Availability filter
         availability = st.selectbox(
-            "📦 Availability",
-            ["All Products", "In Stock Only", "Coming Soon"],
-            label_visibility="visible"
+            "Availability",
+            ["All Products", "In Stock Only", "Coming Soon"]
         )
-    
-    with filter_col3:
-        sort_by = st.selectbox(
-            "↕️ Sort By",
-            ["Name A-Z", "Name Z-A", "Price Low-High", "Price High-Low", "Newest First"]
-        )
-    
-    with filter_col4:
-        organic_only = st.checkbox("🌱 Organic", value=False)
-    
-    with filter_col5:
-        # View toggle
-        view_mode = st.radio(
-            "View",
-            ["Grid", "List"],
-            horizontal=True,
-            label_visibility="collapsed"
-        )
-    
-    # Active Filters Summary & Clear Button
-    active_filters = []
-    if search_term:
-        active_filters.append(f'"{search_term}"')
-    if category_filter != "All Categories":
-        active_filters.append(category_filter)
-    if organic_only:
-        active_filters.append("Organic")
-    if availability != "All Products":
-        active_filters.append(availability)
-    if price_range < 50.0:
-        active_filters.append(f"Under ₪{price_range:.0f}")
-    
-    if active_filters:
-        filter_summary_col, clear_col = st.columns([4, 1])
-        with filter_summary_col:
-            st.markdown(f"**Filtering by:** {' • '.join(active_filters)}")
-        with clear_col:
-            if st.button("🗑️ Clear All", use_container_width=True):
-                st.session_state.selected_category = "All Categories"
-                st.rerun()
-    
-    st.markdown("---")
-    
-    # Results header
-    st.markdown("**Showing fresh produce from our farm**")
-    
-    # Seasonal filter moved to expander (less commonly used)
-    with st.expander("🗓️ More Filters (Seasonal)", expanded=False):
+
+        # Organic filter
+        organic_only = st.checkbox("Organic Only", value=False)
+
+        # Seasonal filter
         seasonal = st.multiselect(
             "Seasonal Availability",
             ["Spring", "Summer", "Fall", "Winter", "Year-round"]
         )
-    
-    # Set default for seasonal if not used
-    if 'seasonal' not in dir() or not seasonal:
-        seasonal = []
+
+        # Clear filters button
+        if st.button("🗑️ Clear All Filters"):
+            # Reset filters (in a real app, you'd clear the filter state)
+            st.rerun()
+
+    # Main product display area
+    col1, col2 = st.columns([3, 1])
+
+    with col2:
+        # Sort options
+        sort_by = st.selectbox(
+            "Sort by:",
+            ["Name A-Z", "Name Z-A", "Price Low-High", "Price High-Low", "Newest First"]
+        )
+
+        # View options
+        view_mode = st.radio(
+            "View:",
+            ["Grid", "List"],
+            horizontal=True
+        )
+
+    with col1:
+        # Search results summary
+        st.markdown("**Showing fresh produce from our farm**")
 
     try:
         # Get products from API
