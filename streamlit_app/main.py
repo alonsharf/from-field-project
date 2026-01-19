@@ -167,41 +167,52 @@ def show_login_page():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Main Customer Login (prominent)
-    st.header("🛒 Customer Login")
-    st.markdown("Login to browse products, place orders, and track shipments.")
+    # Initialize admin access visibility in session state
+    if 'show_admin_access' not in st.session_state:
+        st.session_state.show_admin_access = False
 
-    with st.form("customer_login"):
-        col1, col2 = st.columns([2, 1])
+    # Create tabs for Login and Registration
+    tab_list = ["🛒 Customer Login", "📝 Register New Account"]
 
-        with col1:
-            email = st.text_input("Email", placeholder="customer@example.com", key="customer_email")
-            password = st.text_input("Password", type="password", placeholder="Enter your password", key="customer_password")
+    # Add admin tab if it should be visible
+    if st.session_state.show_admin_access:
+        tab_list.append("🔐 Administrative Access")
 
-        with col2:
-            st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
-            submitted = st.form_submit_button("Login", type="primary", use_container_width=True)
+    tabs = st.tabs(tab_list)
 
-        if submitted:
-            if email and password:
-                user_data = authenticate_customer(email, password)
-                if user_data:
-                    login_user(user_data)
-                    st.session_state.current_page = "Storefront Home"
-                    st.success(f"Welcome back, {user_data['name']}!")
-                    st.rerun()
+    # Customer Login Tab
+    with tabs[0]:
+        st.header("Customer Login")
+        st.markdown("Login to browse products, place orders, and track shipments.")
+
+        with st.form("customer_login"):
+            col1, col2 = st.columns([2, 1])
+
+            with col1:
+                email = st.text_input("Email", placeholder="customer@example.com", key="customer_email")
+                password = st.text_input("Password", type="password", placeholder="Enter your password", key="customer_password")
+
+            with col2:
+                st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
+                submitted = st.form_submit_button("Login", type="primary", use_container_width=True)
+
+            if submitted:
+                if email and password:
+                    user_data = authenticate_customer(email, password)
+                    if user_data:
+                        login_user(user_data)
+                        st.session_state.current_page = "Storefront Home"
+                        st.success(f"Welcome back, {user_data['name']}!")
+                        st.rerun()
+                    else:
+                        st.error("Invalid email or password")
                 else:
-                    st.error("Invalid email or password")
-            else:
-                st.error("Please enter both email and password")
+                    st.error("Please enter both email and password")
 
-    st.info("💡 Existing customers can use: alice@example.com / password123")
+        st.info("💡 Existing customers can use: alice@example.com / password123")
 
-    # Register tab
-    st.markdown("---")
-    tab1 = st.tabs(["📝 Register New Account"])
-
-    with tab1[0]:
+    # Registration Tab
+    with tabs[1]:
         st.header("Register New Customer Account")
         st.markdown("Create a new account to start shopping from our farm.")
 
@@ -270,19 +281,16 @@ def show_login_page():
                     else:
                         st.error("Registration failed. Email may already exist.")
 
-    # Discrete Admin Access at bottom
-    st.markdown("---")
-
-    col1, col2, col3 = st.columns([2, 1, 1])
-    with col3:
-        with st.expander("🔐 Administrative Access"):
-            st.markdown("**Farm Admin Login**")
-            st.caption("Login as the farm administrator to manage inventory, orders, and customers.")
+    # Administrative Access Tab (only visible if enabled)
+    if st.session_state.show_admin_access:
+        with tabs[2]:
+            st.header("Farm Admin Login")
+            st.markdown("Login as the farm administrator to manage inventory, orders, and customers.")
 
             with st.form("admin_login"):
                 email = st.text_input("Admin Email", placeholder="admin@farm.com")
                 password = st.text_input("Admin Password", type="password", placeholder="Enter your password")
-                submitted = st.form_submit_button("Login as Admin", type="secondary", use_container_width=True)
+                submitted = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
 
                 if submitted:
                     if email and password:
@@ -297,7 +305,20 @@ def show_login_page():
                     else:
                         st.error("Please enter both email and password")
 
-            st.caption("💡 Default: john@greenvalley.com / admin123")
+            st.info("💡 Default: john@greenvalley.com / admin123")
+
+    # Button to toggle admin access visibility
+    st.markdown("---")
+    col1, col2, col3 = st.columns([2, 1, 1])
+    with col3:
+        if not st.session_state.show_admin_access:
+            if st.button("🔐 Administrative Access", use_container_width=True, type="secondary"):
+                st.session_state.show_admin_access = True
+                st.rerun()
+        else:
+            if st.button("🔒 Hide Admin Access", use_container_width=True, type="secondary"):
+                st.session_state.show_admin_access = False
+                st.rerun()
 
 def show_farmer_portal():
     """Display farmer portal with navigation."""
