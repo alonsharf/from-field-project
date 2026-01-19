@@ -122,12 +122,12 @@ def show_browse_products():
     
     category_options = [
         ("🛒", "All", "All Categories"),
-        ("🥬", "Vegetables", "Vegetables"),
+        ("🥬", "Veggies", "Vegetables"),
         ("🍎", "Fruits", "Fruits"),
         ("🌿", "Herbs", "Herbs"),
         ("🌾", "Grains", "Grains"),
         ("🥛", "Dairy", "Dairy"),
-        ("⭐", "Specialty", "Specialty Items"),
+        ("⭐", "Special", "Specialty Items"),
     ]
     
     # Initialize category in session state
