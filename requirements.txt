@@ -1,0 +1,26 @@
+# FastAPI Backend Dependencies
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Database Dependencies
+SQLAlchemy==2.0.23
+psycopg2-binary==2.9.8
+asyncpg==0.29.0
+alembic==1.12.1
+
+# Environment and Configuration
+python-dotenv==1.0.0
+
+# Streamlit Frontend Dependencies
+streamlit==1.28.2
+
+# Authentication Dependencies (Backend only)
+bcrypt==4.1.2
+
+# HTTP Client for Frontend-Backend communication
+httpx==0.25.0
+
+# PayPal Integration
+paypalrestsdk==1.13.3

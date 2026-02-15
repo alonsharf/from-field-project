@@ -1,0 +1,73 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: from_field_to_you_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: ${PGDATA}
+    ports:
+      - "${DB_PORT_EXTERNAL}:${DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./packages/db/schema/tables.sql:/docker-entrypoint-initdb.d/01-tables.sql
+      - ./packages/db/schema/inserts.sql:/docker-entrypoint-initdb.d/02-inserts.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # FastAPI Backend
+  api:
+    build: .
+    container_name: from_field_to_you_api
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      - DATABASE_URL=${DOCKER_DATABASE_URL}
+      - PAYPAL_MODE=${PAYPAL_MODE}
+      - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
+      - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
+      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "${API_PORT}", "--reload"]
+    volumes:
+      - .:/app  # For development - remove in production
+    networks:
+      - app-network
+
+  # Streamlit Frontend
+  frontend:
+    build: .
+    container_name: from_field_to_you_frontend
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - API_BASE_URL=${API_BASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api:
+        condition: service_started
+    restart: unless-stopped
+    command: ["streamlit", "run", "streamlit_app/main.py", "--server.address=0.0.0.0", "--server.port=${FRONTEND_PORT}"]
+    volumes:
+      - .:/app  # For development - remove in production
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
